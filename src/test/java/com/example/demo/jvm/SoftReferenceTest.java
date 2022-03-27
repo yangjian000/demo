@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 
 /**
- * -Xmx20 -XX:+PrintGCDetails -verbose:gc
+ * -Xmx20m -XX:+PrintGCDetails -verbose:gc
  */
 public class SoftReferenceTest {
 
