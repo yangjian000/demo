@@ -6,7 +6,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-@Slf4j(topic = "c.problem")
+@Slf4j(topic = "c.PhilosopherEatProblem")
 public class PhilosopherEatProblem {
 
     public static void main(String[] args) {

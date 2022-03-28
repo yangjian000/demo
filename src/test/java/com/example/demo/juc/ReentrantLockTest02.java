@@ -3,6 +3,7 @@ package com.example.demo.juc;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j(topic = "lock.test")
@@ -11,6 +12,19 @@ public class ReentrantLockTest02 {
     static final ReentrantLock lock = new ReentrantLock();
 
     public static void main(String[] args) throws InterruptedException {
+
+        Condition condition1 = lock.newCondition();
+        Condition condition2 = lock.newCondition();
+
+        lock.lock();
+
+        condition1.await();
+        condition1.signal();
+
+
+    }
+
+    private static void test02() throws InterruptedException {
         Thread t1 = new Thread(() -> {
             try {
                 log.debug("try acquire lock ...");
@@ -36,7 +50,6 @@ public class ReentrantLockTest02 {
         TimeUnit.SECONDS.sleep(1);
         lock.unlock();
         log.debug("release lock ...");
-
     }
 
     private static void test01() {
