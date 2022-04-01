@@ -4,6 +4,7 @@ import com.sun.jmx.remote.internal.ArrayQueue;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -11,6 +12,64 @@ import java.util.concurrent.locks.ReentrantLock;
 public class DefineThreadPool {
 }
 
+
+class ThreadPool {
+
+    BlockingQueue<Runnable> taskQueue;
+
+    private HashSet<Worker> workers = new HashSet<>();
+
+    private int coreSize;
+
+    private long timeout;
+
+    private TimeUnit timeUnit;
+
+    public void execute(Runnable task) {
+        synchronized (workers) {
+            if (workers.size() < coreSize) {
+                Worker worker = new Worker(task);
+                workers.add(worker);
+                worker.start();
+            } else {
+                taskQueue.put(task);
+            }
+        }
+    }
+
+    public ThreadPool(int coreSize, long timeout, TimeUnit timeUnit, int queueCapacity) {
+        this.coreSize = coreSize;
+        this.timeout = timeout;
+        this.timeUnit = timeUnit;
+        this.taskQueue = new BlockingQueue<>(queueCapacity);
+    }
+
+    class Worker extends Thread {
+        private Runnable task;
+
+        public Worker(Runnable task) {
+            this.task = task;
+        }
+
+        @Override
+        public void run() {
+            while (task != null || (task = taskQueue.take()) != null) {
+                try {
+                    task.run();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    task = null;
+                }
+            }
+            synchronized (workers) {
+                workers.remove(task);
+            }
+        }
+    }
+
+
+}
 
 class BlockingQueue<T> {
 
@@ -23,6 +82,10 @@ class BlockingQueue<T> {
     private Condition emptyWaitSet = lock.newCondition();
 
     private int capacity;
+
+    public BlockingQueue(int capacity) {
+        this.capacity = capacity;
+    }
 
 
     public T poll(long timeout, TimeUnit unit) {
