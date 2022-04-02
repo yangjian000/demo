@@ -1,6 +1,7 @@
 package com.example.demo.juc;
 
 import com.sun.jmx.remote.internal.ArrayQueue;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -9,7 +10,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Slf4j
 public class DefineThreadPool {
+    public static void main(String[] args) {
+        ThreadPool pool = new ThreadPool(2, 1000, TimeUnit.MILLISECONDS, 10);
+        for (int i = 0; i < 15; i++) {
+            int j =i;
+            pool.execute(()->{
+                log.debug("{}",j);
+            });
+        }
+    }
 }
 
 
@@ -145,4 +156,23 @@ class BlockingQueue<T> {
         }
     }
 
+    public void offer(T element,long timeout,TimeUnit timeUnit){
+        lock.lock();
+        long nanos = timeUnit.toNanos(timeout);
+        try {
+            while (deque.size() == capacity){
+                try {
+                    fullWaitSet.awaitNanos(nanos);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            deque.addLast(element);
+            emptyWaitSet.notify();
+
+        }finally {
+            lock.unlock();
+        }
+
+    }
 }
