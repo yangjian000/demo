@@ -16,24 +16,27 @@ public class EventLoopServerTest {
 
         EventLoopGroup group = new DefaultEventLoopGroup();
 
-        new ServerBootstrap().group(new NioEventLoopGroup(), new NioEventLoopGroup(2)).channel(NioServerSocketChannel.class).childHandler(new ChannelInitializer<NioSocketChannel>() {
-            @Override
-            protected void initChannel(NioSocketChannel ch) throws Exception {
-                ch.pipeline().addLast("handler1", new ChannelInboundHandlerAdapter() {
+        new ServerBootstrap()
+                .group(new NioEventLoopGroup(), new NioEventLoopGroup(2))
+                .channel(NioServerSocketChannel.class)
+                .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     @Override
-                    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                        ByteBuf byteBuf = (ByteBuf) msg;
-                        log.debug(byteBuf.toString(Charset.defaultCharset()));
-                        ctx.fireChannelRead(msg);
+                    protected void initChannel(NioSocketChannel ch) throws Exception {
+                        ch.pipeline().addLast("handler1", new ChannelInboundHandlerAdapter() {
+                            @Override
+                            public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+                                ByteBuf byteBuf = (ByteBuf) msg;
+                                log.debug(byteBuf.toString(Charset.defaultCharset()));
+                                ctx.fireChannelRead(msg);
+                            }
+                        }).addLast(group, "handler2", new ChannelInboundHandlerAdapter() {
+                            @Override
+                            public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+                                ByteBuf buf = (ByteBuf) msg;
+                                log.debug(buf.toString(Charset.defaultCharset()));
+                            }
+                        });
                     }
-                }).addLast(group, "handler2", new ChannelInboundHandlerAdapter() {
-                    @Override
-                    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                        ByteBuf buf = (ByteBuf) msg;
-                        log.debug(buf.toString(Charset.defaultCharset()));
-                    }
-                });
-            }
-        }).bind(8080);
+                }).bind(8080);
     }
 }

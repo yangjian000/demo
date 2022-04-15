@@ -33,7 +33,10 @@ public class NettyTest01 {
 class NettyTestClient {
     public static void main(String[] args) throws InterruptedException {
         // 带有 Future Promise 的类型都是和异步方法配套使用，用来处理结果
-        ChannelFuture channelFuture = new Bootstrap().group(new NioEventLoopGroup()).channel(NioSocketChannel.class).handler(new ChannelInitializer<NioSocketChannel>() {
+        ChannelFuture channelFuture = new Bootstrap()
+                .group(new NioEventLoopGroup())
+                .channel(NioSocketChannel.class)
+                .handler(new ChannelInitializer<NioSocketChannel>() {
                     @Override
                     protected void initChannel(NioSocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new StringEncoder());
