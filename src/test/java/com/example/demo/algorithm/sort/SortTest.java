@@ -5,15 +5,19 @@ import java.util.Arrays;
 public class SortTest {
     public static void main(String[] args) {
         int[] a = {14, 18, 88, 24, 45};
-        int[] sort = MergeSort.sort(a);
-        System.out.println(Arrays.toString(sort));
+//        int[] sort = MergeSort.sort(a);
+//        System.out.println(Arrays.toString(sort));
+
+        QuickSort.sort(a);
+        System.out.println(Arrays.toString(a));
+
     }
 }
 
 class MergeSort {
 
     public static int[] sort(int[] a) {
-        return sort(a, 0, a.length-1);
+        return sort(a, 0, a.length - 1);
     }
 
     private static int[] sort(int[] a, int low, int high) {
@@ -50,3 +54,44 @@ class MergeSort {
         System.arraycopy(temp, 0, a, low, temp.length);
     }
 }
+
+class QuickSort {
+
+    public static void main(String[] args) {
+        int[] a = {1, 3, 2, 4, 5};
+        sort(a);
+        System.out.println(Arrays.toString(a));
+    }
+
+    public static void sort(int[] a) {
+        sort(a, 0, a.length - 1);
+    }
+
+    private static void sort(int[] a, int low, int high) {
+        if (low < high) {
+            int i = low, j = high, temp = a[low];
+
+            while (i < j) {
+                while (i < j && a[j] >= temp) {
+                    j--;
+                }
+                if (i < j) {
+                    a[i++] = a[j];
+                }
+
+                while (i < j && a[i] < temp) {
+                    i++;
+                }
+
+                if (i < j) {
+                    a[j--] = a[i];
+                }
+            }
+            a[i] = temp;
+            sort(a, low, i - 1);
+            sort(a, i + 1, high);
+        }
+
+    }
+}
+
