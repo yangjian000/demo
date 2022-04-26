@@ -11,6 +11,16 @@ public class SortTest {
         QuickSort.sort(a);
         System.out.println(Arrays.toString(a));
 
+        whiles(10);
+    }
+
+    public static int whiles(int loops) {
+        if (loops == 0) {
+            System.out.println(loops);
+            return loops;
+        }
+        System.out.println(loops);
+        return whiles(loops - 1);
     }
 }
 
