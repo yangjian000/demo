@@ -44,14 +44,29 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
     }
 
     public Value get(Key key) {
-        return null;
+        return get(root, key);
     }
 
-    public Value get(Node node, Key key, Value value) {
-        return null;
+    public Value get(Node<Key, Value> x, Key key) {
+        if (x == null) {
+            return null;
+        }
+        int cmp = key.compareTo(x.key);
+        if (cmp > 0) {
+            return get(x.right, key);
+        } else if (cmp < 0) {
+            return get(x.left.key);
+        } else {
+
+            return x.value;
+        }
     }
 
     public void delete(Key key) {
+        delete(root,key);
+    }
+
+    public void delete(Node<Key, Value> x, Key key) {
 
     }
 }
