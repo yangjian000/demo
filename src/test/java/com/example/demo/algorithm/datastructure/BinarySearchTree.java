@@ -25,7 +25,7 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
     }
 
     public void put(Key key, Value value) {
-        put(root, key, value);
+        root = put(root, key, value);
     }
 
     public Node put(Node<Key, Value> x, Key key, Value value) {
@@ -40,6 +40,7 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
         } else {
             x.value = value;
         }
+        N++;
         return x;
     }
 
@@ -63,10 +64,77 @@ public class BinarySearchTree<Key extends Comparable<Key>, Value> {
     }
 
     public void delete(Key key) {
-        delete(root,key);
+        delete(root, key);
     }
 
-    public void delete(Node<Key, Value> x, Key key) {
+    public Node<Key, Value> delete(Node<Key, Value> x, Key key) {
+        if (x == null) {
+            return null;
+        }
+
+        int cmp = key.compareTo(x.key);
+
+        if (cmp > 0) {
+            x.right = delete(x.right, key);
+        } else if (cmp < 0) {
+            x.left = delete(x.left, key);
+        } else {
+            // 如果key等于x节点的键，完成真正的删除节点动作，要删除的节点就是x
+
+            // 让元素个数-1
+            N--;
+            // 找到右子树中最小的节点
+            if (x.right == null) {
+                return x.left;
+            }
+            if (x.left == null) {
+                return x.right;
+            }
+
+            Node<Key, Value> minNode = x.right;
+            while (minNode.left != null) {
+                minNode = minNode.left;
+            }
+
+            // 删除右子树中最小的节点
+            Node<Key, Value> n = x.right;
+            while (n.left != null) {
+                if (n.left.left != null) {
+                    n.left = null;
+                } else {
+                    // 变换n节点
+                    n = n.left;
+                }
+            }
+            // 让x节点的左子树成为minNode的左子树
+            minNode.left = x.left;
+            // 让x节点的父节点指向minNode
+            minNode.right = x.right;
+            // 让x节点的父节点指向minNode
+            x = minNode;
+
+        }
+
+        return x;
+    }
+}
+
+class BinaryTreeTest {
+    public static void main(String[] args) {
+        BinarySearchTree<Integer, String> tree = new BinarySearchTree<>();
+        tree.put(2, "lisi");
+        tree.put(1, "zhangsan");
+        tree.put(3, "wangwu");
+
+        System.out.println(tree.size());
+
+        System.out.println(tree.get(2));
+
+        tree.delete(3);
+        System.out.println(tree.size());
+
+        System.out.println(tree.get(3));
+
 
     }
 }
